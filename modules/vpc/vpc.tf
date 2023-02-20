@@ -13,7 +13,7 @@ resource "aws_subnet" "public_subnet" {
   for_each                = var.PUBLIC_SUBNET_NUMBERS
   availability_zone       = each.key
   map_public_ip_on_launch = true
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 4, each.value)
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, each.value)
   tags = {
     Name   = "${var.ENV}-${var.PROJECT_NAME}-public-subnet"
     Role   = "public"
@@ -59,7 +59,7 @@ resource "aws_route" "public" {
 ##Associate with public subnet
 resource "aws_route_table_association" "public" {
   for_each = aws_subnet.public_subnet
-  subnet_id = aws_subnet.public_subnet[each_value].id
+  subnet_id = each.value.id
   route_table_id = aws_route_table.public_rtb.id
 }
 output "vpc_id" {
